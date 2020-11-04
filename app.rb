@@ -1,4 +1,5 @@
 require 'date'
+require_relative 'time_response'
 
 class App
   def call(env)
@@ -17,21 +18,10 @@ class App
   end
 
   def time(params)
-    format = params['format'] || ''
-
-    keys = format.split(',')
-    allowed_keys = %w[year month day hour minute second]
-    unknown_keys = keys.difference(allowed_keys)
-
-    if unknown_keys.any?
-      unknown_format = "Unknown time format [#{unknown_keys.join(', ')}]\n"
-      return response(400, unknown_format)
-    end
-
-    now = DateTime.now
-    mapping = { 'minute' => 'min', 'second' => 'sec' }
-    time_response = keys.map { |key| now.send(mapping[key] || key) }.join('-') + "\n"
-    response(200, time_response)
+    keys = params['format']&.split(',') || []
+    response(200, TimeResponse.call(keys))
+  rescue UnknownKeysException => e
+    response(400, e.msg)
   end
 
   private
