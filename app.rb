@@ -1,3 +1,5 @@
+require 'date'
+
 class App
   def call(env)
     path = env['REQUEST_PATH']
@@ -15,13 +17,19 @@ class App
   end
 
   def time(params)
-    keys = params['format']&.split(',') || []
+    format = params['format'] || ''
+
+    keys = format.split(',')
     allowed_keys = %w[year month day hour minute second]
 
     unknown_keys = keys.difference(allowed_keys)
     return bad_format(unknown_keys) if unknown_keys.any?
 
-    ok
+    now = DateTime.now
+    mapping = { 'minute' => 'min', 'second' => 'sec' }
+    body = keys.map { |key| now.send(mapping[key] || key) }.join('-') + "\n"
+
+    ok([body])
   end
 
   private
@@ -39,11 +47,19 @@ class App
     ]
   end
 
-  def ok
-    [200, {}, []]
+  def ok(body)
+    [
+      200,
+      { 'Content-Type' => 'text/plain' },
+      body
+    ]
   end
 
   def not_found
-    [404, {}, []]
+    [
+      404,
+      {},
+      []
+    ]
   end
 end
