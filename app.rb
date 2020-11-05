@@ -5,19 +5,15 @@ class App
   def call(env)
     path = env['REQUEST_PATH']
     params = parse_query(env['QUERY_STRING'])
-    router(path, params)
+    process(path, params)
   end
 
-  def router(path, params)
-    case path
-    when '/time'
-      time(params)
-    else
-      response(404)
-    end
+  def process(path, params)
+    return response(404) unless path == '/time'
+    time_response(params)
   end
 
-  def time(params)
+  def time_response(params)
     keys = params['format']&.split(',') || []
     response = TimeResponse.new(keys)
 
