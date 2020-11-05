@@ -1,6 +1,13 @@
 class TimeResponse
   ALLOWED_KEYS = %w[year month day hour minute second]
-  METHOD_MAPPING = { 'minute' => 'min', 'second' => 'sec' }
+  FORMAT_MAPPING = {
+    'year'   => '%Y',
+    'month'  => '%m',
+    'day'    => '%d',
+    'hour'   => '%H',
+    'minute' => '%M',
+    'second' => '%S'
+  }
 
   def initialize(keys)
     @keys = keys
@@ -12,8 +19,8 @@ class TimeResponse
   end
 
   def success
-    now = DateTime.now
-    @keys.map { |key| now.send(METHOD_MAPPING[key] || key) }.join('-') + "\n"
+    format_string = @keys.map(&FORMAT_MAPPING).join('-')
+    "#{DateTime.now.strftime(format_string)}\n"
   end
 
   def unknown_format
