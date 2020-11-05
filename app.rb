@@ -19,9 +19,13 @@ class App
 
   def time(params)
     keys = params['format']&.split(',') || []
-    response(200, TimeResponse.call(keys))
-  rescue UnknownKeysException => e
-    response(400, e.msg)
+    response = TimeResponse.new(keys)
+
+    if response.valid?
+      response(200, response.success)
+    else
+      response(400, response.unknown_format)
+    end
   end
 
   private
