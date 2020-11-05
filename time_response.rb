@@ -15,7 +15,7 @@ class TimeResponse
   end
 
   def valid?
-    @keys_unknown.any?
+    @keys_unknown.empty?
   end
 
   def success
