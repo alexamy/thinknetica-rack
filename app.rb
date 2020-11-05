@@ -15,12 +15,12 @@ class App
 
   def time_response(params)
     keys = params['format']&.split(',') || []
-    response = TimeResponse.new(keys)
+    time = TimeResponse.new(keys)
 
-    if response.valid?
-      response(200, response.success)
+    if time.valid?
+      response(200, time.success)
     else
-      response(400, response.unknown_format)
+      response(400, time.unknown_format)
     end
   end
 
@@ -31,11 +31,8 @@ class App
     query.split('&').map { |s| s.split('=') }.to_h
   end
 
-  def response(code, message = '')
-    [
-      code,
-      { 'Content-Type' => 'text/plain' },
-      [message]
-    ]
+  def response(status, message = '')
+    headers = { 'Content-Type' => 'text/plain' }
+    Rack::Response.new(message, status, headers).finish
   end
 end
