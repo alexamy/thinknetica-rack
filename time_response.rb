@@ -9,9 +9,17 @@ class TimeResponse
     'second' => '%S'
   }
 
+  def self.call(keys)
+    new(keys).call
+  end
+
   def initialize(keys)
     @keys = keys
+  end
+
+  def call
     @keys_unknown = @keys.difference(ALLOWED_KEYS)
+    self
   end
 
   def valid?

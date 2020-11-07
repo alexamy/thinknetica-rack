@@ -15,7 +15,7 @@ class App
 
   def time_response(params)
     keys = params['format']&.split(',') || []
-    time = TimeResponse.new(keys)
+    time = TimeResponse.call(keys)
 
     if time.valid?
       response(200, time.success)
